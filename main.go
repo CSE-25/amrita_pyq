@@ -1,9 +1,9 @@
 package main
 
 import (
-  "amrita_pyq/cmd"
+	"amrita_pyq/cmd"
 )
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
