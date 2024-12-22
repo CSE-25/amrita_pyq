@@ -41,7 +41,9 @@ func year(url string) {
     }
 
     fmt.Println("Please wait until browser opens !")
-    openBrowser(url)
+    if err := openBrowser(url); err != nil {
+        fmt.Printf("Error: %v\n", err)
+    }
     
     var ch int
     fmt.Println("Do you want to continue ? \nPress 1 for Yes and 0 for No : ");

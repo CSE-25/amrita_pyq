@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
     "github.com/anaskhan96/soup"
 	"os/exec"
     "runtime"
@@ -22,7 +21,7 @@ func fetchHTML(url string) (string, error) {
 
 
 // Opens a URL in the default web browser.
-func openBrowser(url string) {
+func openBrowser(url string) error {
     var err error
     switch runtime.GOOS {
     case "linux":
@@ -33,6 +32,7 @@ func openBrowser(url string) {
         err = exec.Command("open", url).Start()
     }
     if err != nil {
-        log.Fatal(err)
+        return fmt.Errorf("failed to open browser: %w", err)
     }
+    return nil
 }
