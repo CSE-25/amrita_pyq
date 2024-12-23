@@ -53,10 +53,8 @@ func semChooseReq(url string) ([]resource ,error) {
 	li := ul[0].FindAll("li")
 
 	if len(ul)>1 {
-		li = ul[1].FindAll("li")
-	} else {
-		li = ul[0].FindAll("li")
-	}
+		li = append(li, ul[1].FindAll("li")...)
+	} 
 
 	var assesments []resource
 
