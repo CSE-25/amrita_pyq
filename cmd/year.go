@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
-
+	"strings"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
 )
@@ -43,10 +43,13 @@ func yearTable(url string) {
 		// Add back option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
+		selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 
 		// Create the form.
 		form := huh.NewForm(
 			huh.NewGroup(
+				huh.NewNote().
+				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
 				huh.NewSelect[string]().
 					Title("Select Question Paper to view").
 					Options(options...).
@@ -60,7 +63,7 @@ func yearTable(url string) {
 			fmt.Printf("Error: %v", err)
 			os.Exit(1)
 		}
-
+			
 		// Handle selection.
 		switch selectedOption {
 		case "back":

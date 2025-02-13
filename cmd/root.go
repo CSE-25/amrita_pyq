@@ -37,6 +37,8 @@ var (
 		Margin(1, 0)
 )
 
+var selectionHistory []string
+
 var rootCmd = &cobra.Command{
 	Use:   "ampyq",
 	Short: "Amrita PYQ CLI",
@@ -56,56 +58,59 @@ func huhMenuStart() {
 		os.Exit(1)
 	}
 
-    resources, err := getCoursesReq(COURSE_LIST_URL)
-    if err != nil {
-        fmt.Println(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
-        os.Exit(1)
-    }
+	resources, err := getCoursesReq(COURSE_LIST_URL)
+	if err != nil {
+		fmt.Println(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		os.Exit(1)
+	}
 
-    var selectedOption string
-    var subjects []Subject
-    var options []huh.Option[string]
+	var selectedOption string
+	var subjects []Subject
+	var options []huh.Option[string]
 
-    // Convert courses to huh options.
-    for _, res := range resources {
-        subject := Subject(res)
-        subjects = append(subjects, subject)
-        options = append(options, huh.NewOption(subject.name, subject.name))
-    }
-    // Add quit option.
-    options = append(options, huh.NewOption("Quit", "Quit"))
+	for _, res := range resources {
+		subject := Subject(res)
+		subjects = append(subjects, subject)
+		options = append(options, huh.NewOption(subject.name, subject.name))
+	}
+	options = append(options, huh.NewOption("Quit", "Quit"))
 
-    // Create the form.
-    form := huh.NewForm(
-        huh.NewGroup(
-            huh.NewSelect[string]().
-                Title("Available Courses").
-                Options(options...).
-                Value(&selectedOption),
-        ),
-    )
+	// First menu does NOT display history yet
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Available Courses").
+				Options(options...).
+				Value(&selectedOption),
+		),
+	)
 
-    err = form.Run()
-    if err != nil {
-        fmt.Printf("Error: %v", err)
-        os.Exit(1)
-    }
+	err = form.Run()
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		os.Exit(1)
+	}
 
-    // Handle selection.
-    if selectedOption == "Quit" {
-        fmt.Print(fetchStatusStyle.Render("Goodbye!\n"))
-        os.Exit(0)
-    }
+	// Auto-exit if "Quit" is selected
+	if selectedOption == "Quit" {
+		fmt.Print(fetchStatusStyle.Render("Goodbye!\n"))
+		os.Exit(0)
+	}
 
-    // Find selected subject and process it.
-    for _, subject := range subjects {
-        if subject.name == selectedOption {
-            url := BASE_URL + subject.path
-            semTable(url)
-            break
-        }
-    }
+	// Store only the selected course
+	selectionHistory = []string{selectedOption} // Reset history to show only last selected
+
+	// Move to the next menu (Second Menu)
+	for _, subject := range subjects {
+		if subject.name == selectedOption {
+			url := BASE_URL + subject.path
+			semTable(url) // Show only selected course in second menu
+			break
+		}
+	}
 }
+
+
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

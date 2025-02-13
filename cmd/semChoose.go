@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
-
+	"strings"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
 )
@@ -42,10 +42,12 @@ func semChoose(url string) {
 	}
 	// Add back option.
 	options = append(options, huh.NewOption("Back", "Back"))
-
+	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
 		huh.NewGroup(
+			huh.NewNote().
+				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
 			huh.NewSelect[string]().
 				Title("Assessments").
 				Options(options...).
@@ -59,6 +61,12 @@ func semChoose(url string) {
 		os.Exit(1)
 	}
 
+	if selectedOption == "Back" && len(selectionHistory) > 0 {
+		selectionHistory = selectionHistory[:len(selectionHistory)-1] // Remove last selection
+	} else {
+		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
+	}
+	
 	// Handle selection.
 	if selectedOption == "Back" {
 		semTable(stack.Pop())
