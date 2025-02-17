@@ -49,11 +49,12 @@ func yearTable(url string) {
 		form := huh.NewForm(
 			huh.NewGroup(
 				huh.NewNote().
-				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+					TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
 				huh.NewSelect[string]().
 					Title("Select Question Paper to view").
 					Options(options...).
-					Value(&selectedOption),
+					Value(&selectedOption).
+					WithHeight(10), // Set the visible limit to 10
 			),
 		)
 
