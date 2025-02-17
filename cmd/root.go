@@ -18,23 +18,23 @@ type Subject struct {
 
 var (
 	logoStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#01FAC6")).
-		Bold(true)
+			Foreground(lipgloss.Color("#01FAC6")).
+			Bold(true)
 
 	errorStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("9")).
-		Bold(true).
-		Underline(true).
-		Padding(0, 1).
-		Margin(1, 0, 1, 0).
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("1"))
+			Foreground(lipgloss.Color("9")).
+			Bold(true).
+			Underline(true).
+			Padding(0, 1).
+			Margin(1, 0, 1, 0).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("1"))
 
 	fetchStatusStyle = lipgloss.NewStyle().
-		PaddingLeft(2).
-		Foreground(lipgloss.Color("6")).
-		Bold(true).
-		Margin(1, 0)
+				PaddingLeft(2).
+				Foreground(lipgloss.Color("6")).
+				Bold(true).
+				Margin(1, 0)
 )
 
 var selectionHistory []string
@@ -109,8 +109,6 @@ func huhMenuStart() {
 		}
 	}
 }
-
-
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-	"strings"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"os"
+	"strings"
+	"time"
 )
 
 type Assessment struct {
@@ -66,7 +66,7 @@ func semChoose(url string) {
 	} else {
 		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
 	}
-	
+
 	// Handle selection.
 	if selectedOption == "Back" {
 		semTable(stack.Pop())

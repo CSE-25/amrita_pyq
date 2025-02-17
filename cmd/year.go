@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-	"strings"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"os"
+	"strings"
+	"time"
 )
 
 type File struct {
@@ -15,7 +15,7 @@ type File struct {
 }
 
 func yearTable(url string) {
-	for{
+	for {
 		action := func() {
 			time.Sleep(2 * time.Second)
 		}
@@ -49,7 +49,7 @@ func yearTable(url string) {
 		form := huh.NewForm(
 			huh.NewGroup(
 				huh.NewNote().
-				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+					TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
 				huh.NewSelect[string]().
 					Title("Select Question Paper to view").
 					Options(options...).
@@ -63,7 +63,7 @@ func yearTable(url string) {
 			fmt.Printf("Error: %v", err)
 			os.Exit(1)
 		}
-			
+
 		// Handle selection.
 		switch selectedOption {
 		case "back":
