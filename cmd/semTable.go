@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-	"strings"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"os"
+	"strings"
+	"time"
 )
 
 type Semester struct {
@@ -66,7 +66,7 @@ func semTable(url string) {
 	} else {
 		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
 	}
-	
+
 	// Handle selection.
 	if selectedOption == "Back" {
 		huhMenuStart() // Go back to main menu.
