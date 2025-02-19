@@ -45,16 +45,24 @@ func yearTable(url string) {
 		options = append(options, huh.NewOption("Quit", "quit"))
 		selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 
+		// Create the select field.
+		selectField := huh.NewSelect[string]().
+			Title("Select Question Paper to view").
+			Options(options...).
+			Value(&selectedOption)
+
+		// Limit number of options displayed when
+		// there are more than 10 options to prevent overflow.
+		if len(options) > 10 {
+			selectField = selectField.WithHeight(20).(*huh.Select[string])
+		}
+
 		// Create the form.
 		form := huh.NewForm(
 			huh.NewGroup(
 				huh.NewNote().
 					TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
-				huh.NewSelect[string]().
-					Title("Select Question Paper to view").
-					Options(options...).
-					Value(&selectedOption).
-					WithHeight(20), // Set the visible limit to 10
+				selectField,
 			),
 		)
 
