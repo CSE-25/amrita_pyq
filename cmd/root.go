@@ -50,20 +50,20 @@ var rootCmd = &cobra.Command{
 }
 
 func QuitWithSpinner() {
-    action := func() {
-        time.Sleep(2 * time.Second)
-    }
-    
-    if err := spinner.New().
-        Type(spinner.Line).
-        Title("  Exiting ...").
-        TitleStyle(fetchStatusStyle.Inline(true)).
-        Action(action).
-        Run(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
-    os.Exit(0)
+	action := func() {
+		time.Sleep(2 * time.Second)
+	}
+
+	if err := spinner.New().
+		Type(spinner.Line).
+		Title("  Exiting ...").
+		TitleStyle(fetchStatusStyle.Inline(true)).
+		Action(action).
+		Run(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	os.Exit(0)
 }
 
 func huhMenuStart() {
