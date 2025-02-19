@@ -130,6 +130,7 @@ After the PDF is displayed, you will have the following options:
 - [Abhinav Ramakrishnan](https://github.com/Abhinav-ark)
 - [Ashwin Narayanan S](https://ashrockzzz2003.github.io/portfolio)
 - [Naik Mubashir](https://github.com/naikmubashir)
+- [Jayadev D](https://github.com/FLASH2332)
   
 ---
 ## Documentation
