@@ -78,14 +78,7 @@ func yearTable(url string) {
 		case "back":
 			huhMenuStart() // Go back to main menu.
 		case "quit":
-			action := func() {
-				time.Sleep(2 * time.Second)
-			}
-			if err := spinner.New().Type(spinner.Line).Title("  Exiting ...").TitleStyle(fetchStatusStyle.Inline(true)).Action(action).Run(); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			os.Exit(0)
+			QuitWithSpinner()
 		default:
 			// Find selected file and process it
 			for _, fileItem := range fileList {

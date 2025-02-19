@@ -49,6 +49,23 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+func QuitWithSpinner() {
+    action := func() {
+        time.Sleep(2 * time.Second)
+    }
+    
+    if err := spinner.New().
+        Type(spinner.Line).
+        Title("  Exiting ...").
+        TitleStyle(fetchStatusStyle.Inline(true)).
+        Action(action).
+        Run(); err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
+    os.Exit(0)
+}
+
 func huhMenuStart() {
 	action := func() {
 		time.Sleep(2 * time.Second)
@@ -93,8 +110,7 @@ func huhMenuStart() {
 
 	// Auto-exit if "Quit" is selected
 	if selectedOption == "Quit" {
-		fmt.Print(fetchStatusStyle.Render("Goodbye!\n"))
-		os.Exit(0)
+		QuitWithSpinner()
 	}
 
 	// Store only the selected course

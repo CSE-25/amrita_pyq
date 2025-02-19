@@ -40,8 +40,9 @@ func semChoose(url string) {
 		assessList = append(assessList, assess)
 		options = append(options, huh.NewOption(assess.name, assess.name))
 	}
-	// Add back option.
+	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
+	options = append(options, huh.NewOption("Quit", "Quit"))
 	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
@@ -71,6 +72,11 @@ func semChoose(url string) {
 	if selectedOption == "Back" {
 		semTable(stack.Pop())
 		return
+	}
+
+	// Auto-exit if "Quit" is selected
+	if selectedOption == "Quit" {
+		QuitWithSpinner()
 	}
 
 	// Find selected assessment and process it.

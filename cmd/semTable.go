@@ -39,8 +39,9 @@ func semTable(url string) {
 		sems = append(sems, semester)
 		options = append(options, huh.NewOption(semester.name, semester.name))
 	}
-	// Add back option.
+	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
+	options = append(options, huh.NewOption("Quit", "Quit"))
 	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
@@ -71,6 +72,11 @@ func semTable(url string) {
 	if selectedOption == "Back" {
 		huhMenuStart() // Go back to main menu.
 		return
+	}
+
+	// Auto-exit if "Quit" is selected
+	if selectedOption == "Quit" {
+		QuitWithSpinner()
 	}
 
 	// Find selected semester and process it.
