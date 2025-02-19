@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"os"
+	"strings"
+	"time"
 )
 
 type File struct {
@@ -15,7 +15,7 @@ type File struct {
 }
 
 func yearTable(url string) {
-	for{
+	for {
 		action := func() {
 			time.Sleep(2 * time.Second)
 		}
@@ -43,14 +43,26 @@ func yearTable(url string) {
 		// Add back option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
+		selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
+
+		// Create the select field.
+		selectField := huh.NewSelect[string]().
+			Title("Select Question Paper to view").
+			Options(options...).
+			Value(&selectedOption)
+
+		// Limit number of options displayed when
+		// there are more than 10 options to prevent overflow.
+		if len(options) > 10 {
+			selectField = selectField.WithHeight(20).(*huh.Select[string])
+		}
 
 		// Create the form.
 		form := huh.NewForm(
 			huh.NewGroup(
-				huh.NewSelect[string]().
-					Title("Select Question Paper to view").
-					Options(options...).
-					Value(&selectedOption),
+				huh.NewNote().
+					TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+				selectField,
 			),
 		)
 
@@ -66,8 +78,7 @@ func yearTable(url string) {
 		case "back":
 			huhMenuStart() // Go back to main menu.
 		case "quit":
-			fmt.Println(fetchStatusStyle.Render("Exiting..."))
-			os.Exit(0)
+			QuitWithSpinner()
 		default:
 			// Find selected file and process it
 			for _, fileItem := range fileList {

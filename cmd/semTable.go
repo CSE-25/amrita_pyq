@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"os"
+	"strings"
+	"time"
 )
 
 type Semester struct {
@@ -39,12 +39,15 @@ func semTable(url string) {
 		sems = append(sems, semester)
 		options = append(options, huh.NewOption(semester.name, semester.name))
 	}
-	// Add back option.
+	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
-
+	options = append(options, huh.NewOption("Quit", "Quit"))
+	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
 		huh.NewGroup(
+			huh.NewNote().
+				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
 			huh.NewSelect[string]().
 				Title("Semesters").
 				Options(options...).
@@ -59,11 +62,21 @@ func semTable(url string) {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
+	if selectedOption == "Back" && len(selectionHistory) > 0 {
+		selectionHistory = selectionHistory[:len(selectionHistory)-1] // Remove last selection
+	} else {
+		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
+	}
 
 	// Handle selection.
 	if selectedOption == "Back" {
 		huhMenuStart() // Go back to main menu.
 		return
+	}
+
+	// Auto-exit if "Quit" is selected
+	if selectedOption == "Quit" {
+		QuitWithSpinner()
 	}
 
 	// Find selected semester and process it.
