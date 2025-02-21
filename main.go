@@ -1,6 +1,7 @@
 package main
 
 import (
+	"amrita_pyq/cmd/requestClient"
 	"amrita_pyq/cmd/root"
 	"amrita_pyq/cmd/semChoose"
 	"amrita_pyq/cmd/semTable"
@@ -14,6 +15,7 @@ func main() {
 	semTable.Init(rootInter)
 	semChoose.Init(rootInter)
 	year.Init(rootInter)
+	requestClient.Init(rootInter)
 
 	root.Execute()
 }

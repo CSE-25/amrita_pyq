@@ -3,12 +3,19 @@ package requestClient
 import (
 	"errors"
 
-	"amrita_pyq/cmd/configs"
 	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/interfaces"
 	"amrita_pyq/cmd/model"
 
 	"github.com/anaskhan96/soup"
 )
+
+// Interface to access functions from root package
+var inter interfaces.Interface
+
+func Init(n interfaces.Interface) {
+	inter = n
+}
 
 var errHTMLFetch error = errors.New("failed to fetch the HTML content")
 
@@ -126,7 +133,7 @@ func YearReq(url string) ([]model.Resource, error) {
 	li := ul.Find("li")
 	hyper := li.Find("a").Attrs()["href"]
 
-	url = configs.BASE_URL + hyper
+	url = inter.UseBASE_URL() + hyper
 	page, err := helpers.FetchHTML(url)
 
 	if err != nil {

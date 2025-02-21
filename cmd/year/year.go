@@ -6,10 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"amrita_pyq/cmd/configs"
 	"amrita_pyq/cmd/helpers"
 	"amrita_pyq/cmd/interfaces"
-	"amrita_pyq/cmd/requestClient"
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
@@ -37,9 +35,9 @@ func yearTable(url string) {
 			os.Exit(1)
 		}
 
-		files, err := requestClient.YearReq(url)
+		files, err := inter.UseYearReq(url)
 		if err != nil {
-			fmt.Print(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+			fmt.Print(inter.UseErrorStyle().Render(fmt.Sprintf("Error: %v\n", err)))
 			return
 		}
 
@@ -96,8 +94,8 @@ func yearTable(url string) {
 			// Find selected file and process it
 			for _, fileItem := range fileList {
 				if fileItem.path == selectedOption {
-					url := configs.BASE_URL + fileItem.path
-					helpers.OpenBrowser(url) // Function to open the browser with the selected URL.
+					url := inter.UseBASE_URL() + fileItem.path
+					inter.UseOpenBrowser(url) // Function to open the browser with the selected URL.
 					break
 				}
 			}

@@ -6,10 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"amrita_pyq/cmd/configs"
 	"amrita_pyq/cmd/helpers"
 	"amrita_pyq/cmd/interfaces"
-	"amrita_pyq/cmd/requestClient"
 	"amrita_pyq/cmd/stack"
 
 	"github.com/charmbracelet/huh"
@@ -37,9 +35,9 @@ func SemTable(url string) {
 		os.Exit(1)
 	}
 
-	semesters, err := requestClient.SemTableReq(url)
+	semesters, err := inter.UseSemTableReq(url)
 	if err != nil {
-		fmt.Print(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Print(inter.UseErrorStyle().Render(fmt.Sprintf("Error: %v\n", err)))
 		return
 	}
 
@@ -96,7 +94,7 @@ func SemTable(url string) {
 	// Find selected semester and process it.
 	for _, sem := range sems {
 		if sem.name == selectedOption {
-			url := configs.BASE_URL + sem.path
+			url := inter.UseBASE_URL() + sem.path
 			inter.UseSemChoose(url)
 			break
 		}

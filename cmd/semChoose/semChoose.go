@@ -6,10 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"amrita_pyq/cmd/configs"
 	"amrita_pyq/cmd/helpers"
 	"amrita_pyq/cmd/interfaces"
-	"amrita_pyq/cmd/requestClient"
 	"amrita_pyq/cmd/stack"
 
 	"github.com/charmbracelet/huh"
@@ -38,9 +36,9 @@ func SemChoose(url string) {
 	}
 	params_url := url
 
-	assessments, err := requestClient.SemChooseReq(url)
+	assessments, err := inter.UseSemChooseReq(url)
 	if err != nil {
-		fmt.Println(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Println(inter.UseErrorStyle().Render(fmt.Sprintf("Error: %v\n", err)))
 		return
 	}
 
@@ -96,7 +94,7 @@ func SemChoose(url string) {
 	// Find selected assessment and process it.
 	for _, assess := range assessList {
 		if assess.name == selectedOption {
-			url := configs.BASE_URL + assess.path
+			url := inter.UseBASE_URL() + assess.path
 			inter.UseYear(url)
 			break
 		}

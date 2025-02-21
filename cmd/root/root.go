@@ -8,6 +8,7 @@ import (
 	"amrita_pyq/cmd/configs"
 	"amrita_pyq/cmd/helpers"
 	"amrita_pyq/cmd/logo"
+	"amrita_pyq/cmd/model"
 	"amrita_pyq/cmd/requestClient"
 	"amrita_pyq/cmd/semChoose"
 	"amrita_pyq/cmd/semTable"
@@ -15,28 +16,73 @@ import (
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
 // Used to implement the interface
 type UseInterface struct{}
 
+// Implementing from configs package
+func (u *UseInterface) UseBASE_URL() string {
+	return configs.BASE_URL
+}
+func (u *UseInterface) UseCOURSE_LIST_URL() string {
+	return configs.COURSE_LIST_URL
+}
+
+// Implementing from helpers package
+func (u *UseInterface) UseLogoStyle() lipgloss.Style {
+	return helpers.LogoStyle
+}
+func (u *UseInterface) UseErrorStyle() lipgloss.Style {
+	return helpers.ErrorStyle
+}
+func (u *UseInterface) UseFetchStatusStyle() lipgloss.Style {
+	return helpers.FetchStatusStyle
+}
+func (u *UseInterface) UseFetchHTML(url string) (string, error) {
+	return helpers.FetchHTML(url)
+}
+func (u *UseInterface) UseOpenBrowser(url string) error {
+	return helpers.OpenBrowser(url)
+}
+
+// Implementing from logo package
+func (u *UseInterface) UseLOGO_ASCII() string {
+	return logo.LOGO_ASCII
+}
+
+// Implementing from requestClient package
+func (u *UseInterface) UseGetCoursesReq(url string) ([]model.Resource, error) {
+	return requestClient.GetCoursesReq(url)
+}
+func (u *UseInterface) UseSemChooseReq(url string) ([]model.Resource, error) {
+	return requestClient.SemChooseReq(url)
+}
+func (u *UseInterface) UseSemTableReq(url string) ([]model.Resource, error) {
+	return requestClient.SemTableReq(url)
+}
+func (u *UseInterface) UseYearReq(url string) ([]model.Resource, error) {
+	return requestClient.YearReq(url)
+}
+
+// Implementing from root package
 func (u *UseInterface) UseHuhMenuStart() {
 	HuhMenuStart()
 }
-
 func (u *UseInterface) UseQuitWithSpinner() {
 	QuitWithSpinner()
-}
-
-// Using SemTable from semTable package
-func (u *UseInterface) UseSemTable(url string) {
-	semTable.SemTable(url)
 }
 
 // Using SemChoose from semChoose package
 func (u *UseInterface) UseSemChoose(url string) {
 	semChoose.SemChoose(url)
+}
+
+// Using SemTable from semTable package
+func (u *UseInterface) UseSemTable(url string) {
+	semTable.SemTable(url)
 }
 
 // Using Year from year package
