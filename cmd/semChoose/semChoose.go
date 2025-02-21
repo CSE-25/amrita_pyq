@@ -1,20 +1,34 @@
-package cmd
+package semChoose
 
 import (
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/huh/spinner"
 	"os"
 	"strings"
 	"time"
+
+	"amrita_pyq/cmd/configs"
+	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/interfaces"
+	"amrita_pyq/cmd/requestClient"
+	"amrita_pyq/cmd/stack"
+
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/huh/spinner"
 )
+
+// Interface to access functions from root package
+var inter interfaces.Interface
+
+func Init(n interfaces.Interface) {
+	inter = n
+}
 
 type Assessment struct {
 	name string
 	path string
 }
 
-func semChoose(url string) {
+func SemChoose(url string) {
 	action := func() {
 		time.Sleep(2 * time.Second)
 	}
@@ -24,9 +38,9 @@ func semChoose(url string) {
 	}
 	params_url := url
 
-	assessments, err := semChooseReq(url)
+	assessments, err := requestClient.SemChooseReq(url)
 	if err != nil {
-		fmt.Println(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Println(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
 		return
 	}
 
@@ -36,19 +50,19 @@ func semChoose(url string) {
 
 	// Convert assessments to huh options.
 	for _, assessment := range assessments {
-		assess := Assessment(assessment)
+		assess := Assessment{assessment.Name, assessment.Path}
 		assessList = append(assessList, assess)
 		options = append(options, huh.NewOption(assess.name, assess.name))
 	}
 	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
-	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
+	selectionDisplay := "Selection(s):\n" + strings.Join(helpers.SelectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
-				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+				TitleFunc(func() string { return selectionDisplay }, &helpers.SelectionHistory),
 			huh.NewSelect[string]().
 				Title("Assessments").
 				Options(options...).
@@ -62,31 +76,31 @@ func semChoose(url string) {
 		os.Exit(1)
 	}
 
-	if selectedOption == "Back" && len(selectionHistory) > 0 {
-		selectionHistory = selectionHistory[:len(selectionHistory)-1] // Remove last selection
+	if selectedOption == "Back" && len(helpers.SelectionHistory) > 0 {
+		helpers.SelectionHistory = helpers.SelectionHistory[:len(helpers.SelectionHistory)-1] // Remove last selection
 	} else {
-		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
+		helpers.SelectionHistory = append(helpers.SelectionHistory, selectedOption) // Append new selection
 	}
 
 	// Handle selection.
 	if selectedOption == "Back" {
-		semTable(stack.Pop())
+		inter.UseSemTable(stack.STACK.Pop())
 		return
 	}
 
 	// Auto-exit if "Quit" is selected
 	if selectedOption == "Quit" {
-		QuitWithSpinner()
+		inter.UseQuitWithSpinner()
 	}
 
 	// Find selected assessment and process it.
 	for _, assess := range assessList {
 		if assess.name == selectedOption {
-			url := BASE_URL + assess.path
-			year(url)
+			url := configs.BASE_URL + assess.path
+			inter.UseYear(url)
 			break
 		}
 	}
 
-	stack.Push(params_url)
+	stack.STACK.Push(params_url)
 }

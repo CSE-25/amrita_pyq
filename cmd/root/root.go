@@ -1,51 +1,61 @@
-package cmd
+package root
 
 import (
 	"fmt"
 	"os"
 	"time"
 
+	"amrita_pyq/cmd/configs"
+	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/logo"
+	"amrita_pyq/cmd/requestClient"
+	"amrita_pyq/cmd/semChoose"
+	"amrita_pyq/cmd/semTable"
+	"amrita_pyq/cmd/year"
+
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
+
+// Used to implement the interface
+type UseInterface struct{}
+
+func (u *UseInterface) UseHuhMenuStart() {
+	HuhMenuStart()
+}
+
+func (u *UseInterface) UseQuitWithSpinner() {
+	QuitWithSpinner()
+}
+
+// Using SemTable from semTable package
+func (u *UseInterface) UseSemTable(url string) {
+	semTable.SemTable(url)
+}
+
+// Using SemChoose from semChoose package
+func (u *UseInterface) UseSemChoose(url string) {
+	semChoose.SemChoose(url)
+}
+
+// Using Year from year package
+func (u *UseInterface) UseYear(url string) {
+	year.Year(url)
+}
 
 type Subject struct {
 	name string
 	path string
 }
 
-var (
-	logoStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#01FAC6")).
-			Bold(true)
-
-	errorStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("9")).
-			Bold(true).
-			Underline(true).
-			Padding(0, 1).
-			Margin(1, 0, 1, 0).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("1"))
-
-	fetchStatusStyle = lipgloss.NewStyle().
-				PaddingLeft(2).
-				Foreground(lipgloss.Color("6")).
-				Bold(true).
-				Margin(1, 0)
-)
-
-var selectionHistory []string
-
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "ampyq",
 	Short: "Amrita PYQ CLI",
 	Long:  `A CLI application to access Amrita Repository for previous year question papers.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Print(logoStyle.Render(LOGO_ASCII))
-		huhMenuStart()
+		fmt.Print(helpers.LogoStyle.Render(logo.LOGO_ASCII))
+		HuhMenuStart()
 	},
 }
 
@@ -57,7 +67,7 @@ func QuitWithSpinner() {
 	if err := spinner.New().
 		Type(spinner.Line).
 		Title("  Exiting ...").
-		TitleStyle(fetchStatusStyle.Inline(true)).
+		TitleStyle(helpers.FetchStatusStyle.Inline(true)).
 		Action(action).
 		Run(); err != nil {
 		fmt.Println(err)
@@ -66,7 +76,7 @@ func QuitWithSpinner() {
 	os.Exit(0)
 }
 
-func huhMenuStart() {
+func HuhMenuStart() {
 	action := func() {
 		time.Sleep(2 * time.Second)
 	}
@@ -75,9 +85,9 @@ func huhMenuStart() {
 		os.Exit(1)
 	}
 
-	resources, err := getCoursesReq(COURSE_LIST_URL)
+	resources, err := requestClient.GetCoursesReq(configs.COURSE_LIST_URL)
 	if err != nil {
-		fmt.Println(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Println(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
 		os.Exit(1)
 	}
 
@@ -86,7 +96,7 @@ func huhMenuStart() {
 	var options []huh.Option[string]
 
 	for _, res := range resources {
-		subject := Subject(res)
+		subject := Subject{res.Name, res.Path}
 		subjects = append(subjects, subject)
 		options = append(options, huh.NewOption(subject.name, subject.name))
 	}
@@ -114,20 +124,20 @@ func huhMenuStart() {
 	}
 
 	// Store only the selected course
-	selectionHistory = []string{selectedOption} // Reset history to show only last selected
+	helpers.SelectionHistory = []string{selectedOption} // Reset history to show only last selected
 
 	// Move to the next menu (Second Menu)
 	for _, subject := range subjects {
 		if subject.name == selectedOption {
-			url := BASE_URL + subject.path
-			semTable(url) // Show only selected course in second menu
+			url := configs.BASE_URL + subject.path
+			semTable.SemTable(url) // Show only selected course in second menu
 			break
 		}
 	}
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

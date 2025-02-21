@@ -1,20 +1,34 @@
-package cmd
+package semTable
 
 import (
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/huh/spinner"
 	"os"
 	"strings"
 	"time"
+
+	"amrita_pyq/cmd/configs"
+	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/interfaces"
+	"amrita_pyq/cmd/requestClient"
+	"amrita_pyq/cmd/stack"
+
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/huh/spinner"
 )
+
+// Interface to access functions from root package
+var inter interfaces.Interface
+
+func Init(n interfaces.Interface) {
+	inter = n
+}
 
 type Semester struct {
 	name string
 	path string
 }
 
-func semTable(url string) {
+func SemTable(url string) {
 	action := func() {
 		time.Sleep(2 * time.Second)
 	}
@@ -23,9 +37,9 @@ func semTable(url string) {
 		os.Exit(1)
 	}
 
-	semesters, err := semTableReq(url)
+	semesters, err := requestClient.SemTableReq(url)
 	if err != nil {
-		fmt.Print(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Print(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
 		return
 	}
 
@@ -35,19 +49,19 @@ func semTable(url string) {
 
 	// Convert semesters to huh options.
 	for _, sem := range semesters {
-		semester := Semester(sem)
+		semester := Semester{sem.Name, sem.Path}
 		sems = append(sems, semester)
 		options = append(options, huh.NewOption(semester.name, semester.name))
 	}
 	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
-	selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
+	selectionDisplay := "Selection(s):\n" + strings.Join(helpers.SelectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
-				TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+				TitleFunc(func() string { return selectionDisplay }, &helpers.SelectionHistory),
 			huh.NewSelect[string]().
 				Title("Semesters").
 				Options(options...).
@@ -55,35 +69,35 @@ func semTable(url string) {
 		),
 	)
 
-	stack.Push(url) // Save current URL to stack.
+	stack.STACK.Push(url) // Save current URL to stack.
 
 	err = form.Run()
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	if selectedOption == "Back" && len(selectionHistory) > 0 {
-		selectionHistory = selectionHistory[:len(selectionHistory)-1] // Remove last selection
+	if selectedOption == "Back" && len(helpers.SelectionHistory) > 0 {
+		helpers.SelectionHistory = helpers.SelectionHistory[:len(helpers.SelectionHistory)-1] // Remove last selection
 	} else {
-		selectionHistory = append(selectionHistory, selectedOption) // Append new selection
+		helpers.SelectionHistory = append(helpers.SelectionHistory, selectedOption) // Append new selection
 	}
 
 	// Handle selection.
 	if selectedOption == "Back" {
-		huhMenuStart() // Go back to main menu.
+		inter.UseHuhMenuStart() // Go back to main menu.
 		return
 	}
 
 	// Auto-exit if "Quit" is selected
 	if selectedOption == "Quit" {
-		QuitWithSpinner()
+		inter.UseQuitWithSpinner()
 	}
 
 	// Find selected semester and process it.
 	for _, sem := range sems {
 		if sem.name == selectedOption {
-			url := BASE_URL + sem.path
-			semChoose(url)
+			url := configs.BASE_URL + sem.path
+			inter.UseSemChoose(url)
 			break
 		}
 	}

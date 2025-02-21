@@ -1,13 +1,26 @@
-package cmd
+package year
 
 import (
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/huh/spinner"
 	"os"
 	"strings"
 	"time"
+
+	"amrita_pyq/cmd/configs"
+	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/interfaces"
+	"amrita_pyq/cmd/requestClient"
+
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/huh/spinner"
 )
+
+// Interface to access functions from root package
+var inter interfaces.Interface
+
+func Init(n interfaces.Interface) {
+	inter = n
+}
 
 type File struct {
 	name string
@@ -24,9 +37,9 @@ func yearTable(url string) {
 			os.Exit(1)
 		}
 
-		files, err := yearReq(url)
+		files, err := requestClient.YearReq(url)
 		if err != nil {
-			fmt.Print(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+			fmt.Print(helpers.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
 			return
 		}
 
@@ -36,14 +49,14 @@ func yearTable(url string) {
 
 		// Convert files to huh options.
 		for _, file := range files {
-			fileItem := File(file)
+			fileItem := File{file.Name, file.Path}
 			fileList = append(fileList, fileItem)
 			options = append(options, huh.NewOption(fileItem.name, fileItem.path))
 		}
 		// Add back option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
-		selectionDisplay := "Selection(s):\n" + strings.Join(selectionHistory, " → ")
+		selectionDisplay := "Selection(s):\n" + strings.Join(helpers.SelectionHistory, " → ")
 
 		// Create the select field.
 		selectField := huh.NewSelect[string]().
@@ -61,7 +74,7 @@ func yearTable(url string) {
 		form := huh.NewForm(
 			huh.NewGroup(
 				huh.NewNote().
-					TitleFunc(func() string { return selectionDisplay }, &selectionHistory),
+					TitleFunc(func() string { return selectionDisplay }, &helpers.SelectionHistory),
 				selectField,
 			),
 		)
@@ -76,15 +89,15 @@ func yearTable(url string) {
 		// Handle selection.
 		switch selectedOption {
 		case "back":
-			huhMenuStart() // Go back to main menu.
+			inter.UseHuhMenuStart() // Go back to main menu.
 		case "quit":
-			QuitWithSpinner()
+			inter.UseQuitWithSpinner() // Quit the program.
 		default:
 			// Find selected file and process it
 			for _, fileItem := range fileList {
 				if fileItem.path == selectedOption {
-					url := BASE_URL + fileItem.path
-					openBrowser(url) // Function to open the browser with the selected URL.
+					url := configs.BASE_URL + fileItem.path
+					helpers.OpenBrowser(url) // Function to open the browser with the selected URL.
 					break
 				}
 			}
@@ -92,6 +105,6 @@ func yearTable(url string) {
 	}
 }
 
-func year(url string) {
+func Year(url string) {
 	yearTable(url) // Call the yearTable function to display the menu.
 }

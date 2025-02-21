@@ -1,15 +1,20 @@
-package cmd
+package requestClient
 
 import (
 	"errors"
+
+	"amrita_pyq/cmd/configs"
+	"amrita_pyq/cmd/helpers"
+	"amrita_pyq/cmd/model"
+
 	"github.com/anaskhan96/soup"
 )
 
 var errHTMLFetch error = errors.New("failed to fetch the HTML content")
 
-func getCoursesReq(url string) ([]resource, error) {
+func GetCoursesReq(url string) ([]model.Resource, error) {
 
-	res, err := fetchHTML(url)
+	res, err := helpers.FetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
@@ -20,22 +25,22 @@ func getCoursesReq(url string) ([]resource, error) {
 
 	subs := div.FindAll("div", "class", "artifact-title")
 
-	var subjects []resource
+	var subjects []model.Resource
 
 	for _, item := range subs {
 		sub := item.Find("span")
 		a := item.Find("a")
 		path := a.Attrs()["href"]
-		subject := resource{sub.Text(), path}
+		subject := model.Resource{Name: sub.Text(), Path: path}
 		subjects = append(subjects, subject)
 	}
 
 	return subjects, nil
 }
 
-func semChooseReq(url string) ([]resource, error) {
+func SemChooseReq(url string) ([]model.Resource, error) {
 
-	res, err := fetchHTML(url)
+	res, err := helpers.FetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
@@ -57,22 +62,22 @@ func semChooseReq(url string) ([]resource, error) {
 		li = ul[0].FindAll("li")
 	}
 
-	var assesments []resource
+	var assesments []model.Resource
 
 	for _, link := range li {
 		a := link.Find("a")
 		span := a.Find("span")
 		path := link.Find("a").Attrs()["href"]
-		assesment := resource{span.Text(), path}
+		assesment := model.Resource{Name: span.Text(), Path: path}
 		assesments = append(assesments, assesment)
 	}
 
 	return assesments, nil
 }
 
-func semTableReq(url string) ([]resource, error) {
+func SemTableReq(url string) ([]model.Resource, error) {
 
-	res, err := fetchHTML(url)
+	res, err := helpers.FetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
@@ -92,13 +97,13 @@ func semTableReq(url string) ([]resource, error) {
 		return nil, errors.New("no semesters found on the page")
 	}
 
-	var semesters []resource
+	var semesters []model.Resource
 
 	for _, link := range li {
 		a := link.Find("a")
 		span := a.Find("span")
 		path := link.Find("a").Attrs()["href"]
-		semester := resource{span.Text(), path}
+		semester := model.Resource{Name: span.Text(), Path: path}
 		semesters = append(semesters, semester)
 	}
 
@@ -106,9 +111,9 @@ func semTableReq(url string) ([]resource, error) {
 
 }
 
-func yearReq(url string) ([]resource, error) {
+func YearReq(url string) ([]model.Resource, error) {
 
-	res, err := fetchHTML(url)
+	res, err := helpers.FetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
@@ -121,8 +126,8 @@ func yearReq(url string) ([]resource, error) {
 	li := ul.Find("li")
 	hyper := li.Find("a").Attrs()["href"]
 
-	url = BASE_URL + hyper
-	page, err := fetchHTML(url)
+	url = configs.BASE_URL + hyper
+	page, err := helpers.FetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
@@ -133,7 +138,7 @@ func yearReq(url string) ([]resource, error) {
 
 	subdiv := div.FindAll("div", "class", "file-wrapper")
 
-	var files []resource
+	var files []model.Resource
 
 	for _, item := range subdiv {
 		title := item.FindAll("div")
@@ -141,7 +146,7 @@ func yearReq(url string) ([]resource, error) {
 		span := indiv.FindAll("span")
 		fileName := span[1].Attrs()["title"]
 		path := title[0].Find("a").Attrs()["href"]
-		file := resource{fileName, path}
+		file := model.Resource{Name: fileName, Path: path}
 		files = append(files, file)
 	}
 
