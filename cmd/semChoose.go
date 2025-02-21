@@ -83,7 +83,7 @@ func semChoose(url string) {
 	for _, assess := range assessList {
 		if assess.name == selectedOption {
 			url := BASE_URL + assess.path
-			year(url)
+			subCommTable(url)
 			break
 		}
 	}
