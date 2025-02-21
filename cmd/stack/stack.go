@@ -1,4 +1,4 @@
-package cmd
+package stack
 
 // Stack implementation using Go slices.
 type Stack struct {
@@ -38,4 +38,4 @@ func NewStack() *Stack {
 	return &Stack{}
 }
 
-var stack = NewStack()
+var STACK = NewStack()
