@@ -107,29 +107,14 @@ func semTableReq(url string) ([]resource, error) {
 }
 
 func yearReq(url string) ([]resource, error) {
-
-	res, err := fetchHTML(url)
-
-	if err != nil {
-		return nil, errHTMLFetch
-	}
-
-	doc := soup.HTMLParse(res)
-	div := doc.Find("div", "xmlns", "http://di.tamu.edu/DRI/1.0/")
-
-	ul := div.Find("ul")
-	li := ul.Find("li")
-	hyper := li.Find("a").Attrs()["href"]
-
-	url = BASE_URL + hyper
 	page, err := fetchHTML(url)
 
 	if err != nil {
 		return nil, errHTMLFetch
 	}
 
-	doc = soup.HTMLParse(page)
-	div = doc.Find("div", "class", "file-list")
+	doc := soup.HTMLParse(page)
+	div := doc.Find("div", "class", "file-list")
 
 	subdiv := div.FindAll("div", "class", "file-wrapper")
 
@@ -147,4 +132,38 @@ func yearReq(url string) ([]resource, error) {
 
 	return files, nil
 
+}
+
+func subComReq(url string) ([]resource, error) {
+	res, err := fetchHTML(url)
+
+	if err != nil {
+		return nil, errHTMLFetch
+	}
+
+	doc := soup.HTMLParse(res)
+	div := doc.Find("div", "xmlns", "http://di.tamu.edu/DRI/1.0/")
+
+	uls := div.FindAll("ul")
+	communities := map[soup.Root]bool{} // set
+
+	for _, ul := range uls {
+		lis := ul.FindAll("li")
+		for _, li := range lis {
+			_, ok := communities[li]
+			if !ok {
+				communities[li] = true
+			}
+		}
+	}
+
+	var subCommunities []resource
+
+	for com := range communities {
+		a := com.Find("a")
+		path := a.Attrs()["href"]
+		subCommunity := resource{a.Text(), path}
+		subCommunities = append(subCommunities, subCommunity)
+	}
+	return subCommunities, nil
 }

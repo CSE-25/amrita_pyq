@@ -9,22 +9,22 @@ import (
 	"time"
 )
 
-type File struct {
+type SubCommunity struct {
 	name string
 	path string
 }
 
-func yearTable(url string) {
+func subCommTable(url string) {
 	for {
 		action := func() {
 			time.Sleep(2 * time.Second)
 		}
-		if err := spinner.New().Title("Fetching ...").Action(action).Run(); err != nil {
+		if err := spinner.New().Title("Fetching Sub Communities...").Action(action).Run(); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		files, err := yearReq(url)
+		subCommunities, err := subComReq(url)
 
 		if err != nil {
 			fmt.Print(errorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
@@ -33,13 +33,13 @@ func yearTable(url string) {
 
 		var selectedOption string
 		var options []huh.Option[string]
-		var fileList []File
+		var subCommunityList []SubCommunity
 
-		// Convert files to huh options.
-		for _, file := range files {
-			fileItem := File(file)
-			fileList = append(fileList, fileItem)
-			options = append(options, huh.NewOption(fileItem.name, fileItem.path))
+		// Convert sub communities to huh options.
+		for _, subCom := range subCommunities {
+			subCommItem := SubCommunity(subCom)
+			subCommunityList = append(subCommunityList, subCommItem)
+			options = append(options, huh.NewOption(subCommItem.name, subCommItem.path))
 		}
 		// Add back option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
@@ -48,7 +48,7 @@ func yearTable(url string) {
 
 		// Create the select field.
 		selectField := huh.NewSelect[string]().
-			Title("Select Question Paper to view").
+			Title("Select Sub community to view").
 			Options(options...).
 			Value(&selectedOption)
 
@@ -81,11 +81,11 @@ func yearTable(url string) {
 		case "quit":
 			QuitWithSpinner()
 		default:
-			// Find selected file and process it
-			for _, fileItem := range fileList {
-				if fileItem.path == selectedOption {
-					url := BASE_URL + fileItem.path
-					openBrowser(url) // Function to open the browser with the selected URL.
+			// Find selected sub Community and process it
+			for _, subComItem := range subCommunityList {
+				if subComItem.path == selectedOption {
+					url := BASE_URL + subComItem.path
+					yearTable(url) // Function to display the question papers
 					break
 				}
 			}
