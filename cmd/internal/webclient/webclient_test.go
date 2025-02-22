@@ -1,10 +1,12 @@
-package helpers
+package webclient
 
 import (
 	"testing"
 )
 
 func TestFetchHTML(t *testing.T) {
+	client := DefaultWebClient{}
+
 	tests := []struct {
 		name    string
 		url     string
@@ -26,7 +28,7 @@ func TestFetchHTML(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			_, gotErr := FetchHTML(tc.url)
+			_, gotErr := client.FetchHTML(tc.url)
 			if tc.wantErr && gotErr == nil {
 				t.Errorf("expected error for URL %s, got nil", tc.url)
 			} else if !tc.wantErr && gotErr != nil {
@@ -40,6 +42,8 @@ func TestOpenBrowser(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping TestOpenBrowser in short mode")
 	}
+
+	client := DefaultWebClient{}
 
 	tests := []struct {
 		name    string
@@ -58,7 +62,7 @@ func TestOpenBrowser(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			if gotErr := OpenBrowser(tc.url); (gotErr != nil) != tc.wantErr {
+			if gotErr := client.OpenBrowser(tc.url); (gotErr != nil) != tc.wantErr {
 				t.Errorf("for URL %s, expected error: %v, got: %v", tc.url, tc.wantErr, gotErr)
 			}
 		})

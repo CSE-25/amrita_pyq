@@ -1,4 +1,4 @@
-package semChoose
+package menu
 
 import (
 	"fmt"
@@ -6,27 +6,27 @@ import (
 	"strings"
 	"time"
 
-	"amrita_pyq/cmd/helpers"
-	"amrita_pyq/cmd/interfaces"
-	"amrita_pyq/cmd/stack"
+	"amrita_pyq/cmd/internal/configs"
+	"amrita_pyq/cmd/internal/requestclient"
+	"amrita_pyq/cmd/util"
+	"amrita_pyq/cmd/util/stack"
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
 )
 
-// Interface to access functions from root package
-var inter interfaces.Interface
+type (
+	Assessment struct {
+		name string
+		path string
+	}
 
-func Init(n interfaces.Interface) {
-	inter = n
-}
+	SemChoose struct {
+		ReqClient requestclient.RequestClient
+	}
+)
 
-type Assessment struct {
-	name string
-	path string
-}
-
-func SemChoose(url string) {
+func (sc *SemChoose) ChooseSemester(url string) {
 	action := func() {
 		time.Sleep(2 * time.Second)
 	}
@@ -36,9 +36,9 @@ func SemChoose(url string) {
 	}
 	params_url := url
 
-	assessments, err := inter.UseSemChooseReq(url)
+	assessments, err := sc.ReqClient.SemChooseReq(url)
 	if err != nil {
-		fmt.Println(inter.UseErrorStyle().Render(fmt.Sprintf("Error: %v\n", err)))
+		fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
 		return
 	}
 
@@ -55,12 +55,12 @@ func SemChoose(url string) {
 	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
-	selectionDisplay := "Selection(s):\n" + strings.Join(helpers.SelectionHistory, " → ")
+	selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
-				TitleFunc(func() string { return selectionDisplay }, &helpers.SelectionHistory),
+				TitleFunc(func() string { return selectionDisplay }, &configs.SelectionHistory),
 			huh.NewSelect[string]().
 				Title("Assessments").
 				Options(options...).
@@ -74,28 +74,33 @@ func SemChoose(url string) {
 		os.Exit(1)
 	}
 
-	if selectedOption == "Back" && len(helpers.SelectionHistory) > 0 {
-		helpers.SelectionHistory = helpers.SelectionHistory[:len(helpers.SelectionHistory)-1] // Remove last selection
+	if selectedOption == "Back" && len(configs.SelectionHistory) > 0 {
+		configs.SelectionHistory = configs.SelectionHistory[:len(configs.SelectionHistory)-1] // Remove last selection
 	} else {
-		helpers.SelectionHistory = append(helpers.SelectionHistory, selectedOption) // Append new selection
+		configs.SelectionHistory = append(configs.SelectionHistory, selectedOption) // Append new selection
 	}
 
 	// Handle selection.
 	if selectedOption == "Back" {
-		inter.UseSemTable(stack.STACK.Pop())
+		if _, err := sc.ReqClient.SemTableReq(stack.STACK.Pop()); err != nil {
+			fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		}
 		return
 	}
 
 	// Auto-exit if "Quit" is selected
 	if selectedOption == "Quit" {
-		inter.UseQuitWithSpinner()
+		util.QuitWithSpinner()
 	}
 
 	// Find selected assessment and process it.
 	for _, assess := range assessList {
 		if assess.name == selectedOption {
-			url := inter.UseBASE_URL() + assess.path
-			inter.UseYear(url)
+			url := configs.BASE_URL + assess.path
+			yearTable := YearTable{
+				ReqClient: sc.ReqClient,
+			}
+			yearTable.ChooseQP(url)
 			break
 		}
 	}

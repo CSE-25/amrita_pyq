@@ -1,4 +1,4 @@
-name: CI
+name: CI (Go Unit Tests)
 
 on:
   push:
@@ -35,7 +35,5 @@ jobs:
       - name: Run unit tests
         run: go test ./... -v
 
-      - name: Check for lint errors
-        run: |
-          go install golangci-lint@latest
-          golangci-lint run ./...
+      - name: Go Lint Test
+        uses: golangci/golangci-lint-action@v6.5.0
