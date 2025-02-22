@@ -5,22 +5,34 @@ import (
 )
 
 func TestConfigs(t *testing.T) {
-
-	//Testing base url
-	expBASE_URL := "http://dspace.amritanet.edu:8080"
-	if BASE_URL != expBASE_URL {
-		t.Errorf("Expected %v, Received %v", expBASE_URL, BASE_URL)
+	tests := []struct {
+		name    string
+		url     string
+		wantUrl string
+	}{
+		{
+			name:    "SuccessBaseURLDeclaredProperly",
+			url:     BASE_URL,
+			wantUrl: "http://dspace.amritanet.edu:8080",
+		},
+		{
+			name:    "SuccessCourseURLDeclaredProperly",
+			url:     COURSE_URL,
+			wantUrl: "http://dspace.amritanet.edu:8080/xmlui/handle/123456789/",
+		},
+		{
+			name:    "SuccessCourseListURLDeclaredProperly",
+			url:     COURSE_LIST_URL,
+			wantUrl: "http://dspace.amritanet.edu:8080/xmlui/handle/123456789/16",
+		},
 	}
 
-	//Testing course url
-	expCOURSE_URL := expBASE_URL + "/xmlui/handle/123456789/"
-	if COURSE_URL != expCOURSE_URL {
-		t.Errorf("Expected %v, Received %v", expCOURSE_URL, COURSE_URL)
-	}
-
-	//Testing course list url
-	expCOURSE_LIST_URL := expCOURSE_URL + "16"
-	if COURSE_LIST_URL != expCOURSE_LIST_URL {
-		t.Errorf("Expected %v, Received %v", expCOURSE_LIST_URL, COURSE_LIST_URL)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			if tc.url != tc.wantUrl {
+				t.Errorf("Expected %s, got %s", tc.wantUrl, tc.url)
+			}
+		})
 	}
 }

@@ -48,6 +48,7 @@ func FetchHTML(url string) (string, error) {
 // Opens a URL in the default web browser.
 func OpenBrowser(url string) error {
 	var err error
+
 	switch runtime.GOOS {
 	case "linux":
 		err = exec.Command("xdg-open", url).Start()
@@ -56,9 +57,11 @@ func OpenBrowser(url string) error {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	}
+
 	if err != nil {
 		styledMessage := ErrorStyle.Render("failed to open browser")
 		return fmt.Errorf("%s: %w", styledMessage, err)
 	}
+
 	return nil
 }
