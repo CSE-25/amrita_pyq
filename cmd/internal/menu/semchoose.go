@@ -97,10 +97,10 @@ func (sc *SemChoose) ChooseSemester(url string) {
 	for _, assess := range assessList {
 		if assess.name == selectedOption {
 			url := configs.BASE_URL + assess.path
-			yearTable := YearTable{
+			subComTable := SubCommunityTable{
 				ReqClient: sc.ReqClient,
 			}
-			yearTable.ChooseQP(url)
+			subComTable.ChooseSubCommunity(url)
 			break
 		}
 	}
