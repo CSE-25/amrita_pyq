@@ -132,6 +132,8 @@ After the PDF is displayed, you will have the following options:
 - [Naik Mubashir](https://github.com/naikmubashir)
 - [Jayadev D](https://github.com/FLASH2332)
 - [Nandagopal R Nair](https://github.com/Nandgopal-R)
+- [Shyam Sundar Raju](https://github.com/Shyam-Sundar-Raju)
+
 ---
 ## Documentation
 - [Ashwin V A](https://github.com/WinterSun23)
