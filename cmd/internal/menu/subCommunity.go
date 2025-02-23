@@ -46,7 +46,7 @@ func (sct *SubCommunityTable) ChooseSubCommunity(url string) {
 		var options []huh.Option[string]
 		var subComList []SubCommunity
 
-		// Convert files to huh options.
+		// Convert subCommunities to huh options.
 		for _, subCommunity := range subCommunities {
 			subComItem := SubCommunity{subCommunity.Name, subCommunity.Path}
 			subComList = append(subComList, subComItem)
@@ -95,7 +95,7 @@ func (sct *SubCommunityTable) ChooseSubCommunity(url string) {
 		case "quit":
 			util.QuitWithSpinner() // Quit the program.
 		default:
-			// Find selected file and process it.
+			// Find selected subCommunity and process it.
 			for _, subComItem := range subComList {
 				if subComItem.path == selectedOption {
 					url := configs.BASE_URL + subComItem.path
