@@ -1,4 +1,4 @@
-package cmd
+package logo
 
 const LOGO_ASCII string = `
            __  __ _____  _____ _______         _______     ______  

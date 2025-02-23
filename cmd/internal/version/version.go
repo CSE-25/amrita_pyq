@@ -1,12 +1,12 @@
-package cmd
+package version
 
 import (
-	"fmt"
+	"amrita_pyq/cmd"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	cmd.Cmd.AddCommand(versionCmd)
 }
 
 var versionCmd = &cobra.Command{
@@ -14,6 +14,6 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of ampyq",
 	Long:  `Displays version of ampyq installed on the system.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Amrita Previous Year Questions v0.0.1-alpha")
+		cmd.Println("Amrita Previous Year Questions v1.0.1")
 	},
 }

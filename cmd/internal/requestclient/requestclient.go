@@ -1,42 +1,50 @@
-package cmd
+package requestclient
 
 import (
 	"errors"
+
+	"amrita_pyq/cmd/internal/configs"
+	"amrita_pyq/cmd/internal/webclient"
 	"github.com/anaskhan96/soup"
 )
 
-var errHTMLFetch error = errors.New("failed to fetch the HTML content")
+type (
+	Resource struct {
+		Name string
+		Path string
+	}
 
-func getCoursesReq(url string) ([]resource, error) {
+	RequestClient struct {
+		WebClient webclient.WebClient
+	}
+)
 
-	res, err := fetchHTML(url)
+var errHTMLFetch = errors.New("failed to fetch the HTML content")
 
+func (rc *RequestClient) GetCoursesReq(url string) ([]Resource, error) {
+	res, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
 
 	doc := soup.HTMLParse(res)
 	div := doc.Find("div", "id", "aspect_artifactbrowser_CommunityViewer_div_community-view")
-
 	subs := div.FindAll("div", "class", "artifact-title")
 
-	var subjects []resource
-
+	var subjects []Resource
 	for _, item := range subs {
 		sub := item.Find("span")
 		a := item.Find("a")
 		path := a.Attrs()["href"]
-		subject := resource{sub.Text(), path}
+		subject := Resource{Name: sub.Text(), Path: path}
 		subjects = append(subjects, subject)
 	}
 
 	return subjects, nil
 }
 
-func semChooseReq(url string) ([]resource, error) {
-
-	res, err := fetchHTML(url)
-
+func (rc *RequestClient) SemChooseReq(url string) ([]Resource, error) {
+	res, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
@@ -45,35 +53,31 @@ func semChooseReq(url string) ([]resource, error) {
 	div := doc.Find("div", "id", "aspect_artifactbrowser_CommunityViewer_div_community-view")
 
 	if div.Error != nil {
-		return nil, errors.New("no assesments found on the page")
+		return nil, errors.New("no assessments found on the page")
 	}
 
 	ul := div.FindAll("ul")
 	var li []soup.Root
-
 	if len(ul) > 1 {
 		li = ul[1].FindAll("li")
 	} else {
 		li = ul[0].FindAll("li")
 	}
 
-	var assesments []resource
-
+	var assessments []Resource
 	for _, link := range li {
 		a := link.Find("a")
 		span := a.Find("span")
-		path := link.Find("a").Attrs()["href"]
-		assesment := resource{span.Text(), path}
-		assesments = append(assesments, assesment)
+		path := a.Attrs()["href"]
+		assessment := Resource{Name: span.Text(), Path: path}
+		assessments = append(assessments, assessment)
 	}
 
-	return assesments, nil
+	return assessments, nil
 }
 
-func semTableReq(url string) ([]resource, error) {
-
-	res, err := fetchHTML(url)
-
+func (rc *RequestClient) SemTableReq(url string) ([]Resource, error) {
+	res, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
@@ -87,64 +91,54 @@ func semTableReq(url string) ([]resource, error) {
 
 	ul := div.Find("ul")
 	li := ul.FindAll("li")
-
 	if len(li) == 0 {
 		return nil, errors.New("no semesters found on the page")
 	}
 
-	var semesters []resource
-
+	var semesters []Resource
 	for _, link := range li {
 		a := link.Find("a")
 		span := a.Find("span")
-		path := link.Find("a").Attrs()["href"]
-		semester := resource{span.Text(), path}
+		path := a.Attrs()["href"]
+		semester := Resource{Name: span.Text(), Path: path}
 		semesters = append(semesters, semester)
 	}
 
 	return semesters, nil
-
 }
 
-func yearReq(url string) ([]resource, error) {
-
-	res, err := fetchHTML(url)
-
+func (rc *RequestClient) YearReq(url string) ([]Resource, error) {
+	res, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
 
 	doc := soup.HTMLParse(res)
 	div := doc.Find("div", "xmlns", "http://di.tamu.edu/DRI/1.0/")
-
 	ul := div.Find("ul")
 	li := ul.Find("li")
 	hyper := li.Find("a").Attrs()["href"]
 
-	url = BASE_URL + hyper
-	page, err := fetchHTML(url)
-
+	url = configs.BASE_URL + hyper
+	page, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
 
 	doc = soup.HTMLParse(page)
 	div = doc.Find("div", "class", "file-list")
-
 	subdiv := div.FindAll("div", "class", "file-wrapper")
 
-	var files []resource
-
+	var files []Resource
 	for _, item := range subdiv {
 		title := item.FindAll("div")
 		indiv := title[1].Find("div")
 		span := indiv.FindAll("span")
 		fileName := span[1].Attrs()["title"]
 		path := title[0].Find("a").Attrs()["href"]
-		file := resource{fileName, path}
+		file := Resource{Name: fileName, Path: path}
 		files = append(files, file)
 	}
 
 	return files, nil
-
 }
