@@ -25,7 +25,6 @@ func TestGetCoursesReq(t *testing.T) {
 			</div>
 		</body>
 	</html>`
-
 	tests := []struct {
 		name     string
 		mockFunc func(url string) (string, error)
@@ -100,7 +99,7 @@ func TestSemChooseReq(t *testing.T) {
 		inputURL string
 		wantLen  int
 		wantErr  bool
-		expected Resource
+		expected []Resource
 	}{
 		{
 			name: "SuccessSemChooseHTML",
@@ -108,9 +107,13 @@ func TestSemChooseReq(t *testing.T) {
 				return successHTML, nil
 			},
 			inputURL: "/dummy",
-			wantLen:  1,
+			wantLen:  3,
 			wantErr:  false,
-			expected: Resource{Name: "Assessment3", Path: "/assessment3"},
+			expected: []Resource{
+				{Name: "Assessment1", Path: "/assessment1"},
+				{Name: "Assessment2", Path: "/assessment2"},
+				{Name: "Assessment3", Path: "/assessment3"},
+			},
 		},
 		{
 			name: "FailHTMLError",
@@ -120,6 +123,7 @@ func TestSemChooseReq(t *testing.T) {
 			inputURL: "/dummy",
 			wantLen:  0,
 			wantErr:  true,
+			expected: []Resource{},
 		},
 	}
 
@@ -138,11 +142,13 @@ func TestSemChooseReq(t *testing.T) {
 				t.Fatalf("expected %d assessments, got %d", tc.wantLen, len(assessments))
 			}
 			if !tc.wantErr && tc.wantLen > 0 {
-				if assessments[0].Name != tc.expected.Name {
-					t.Errorf("expected name %s, got %s", tc.expected.Name, assessments[0].Name)
-				}
-				if assessments[0].Path != tc.expected.Path {
-					t.Errorf("expected path %s, got %s", tc.expected.Path, assessments[0].Path)
+				for index, assessment := range assessments {
+					if assessment.Name != tc.expected[index].Name {
+						t.Errorf("expected name %s, got %s", tc.expected[index].Name, assessment.Name)
+					}
+					if assessment.Path != tc.expected[index].Path {
+						t.Errorf("expected path %s, got %s", tc.expected[index].Path, assessment.Path)
+					}
 				}
 			}
 		})
@@ -227,18 +233,41 @@ func TestSemTableReq(t *testing.T) {
 	}
 }
 
-func TestYearReq(t *testing.T) {
-	firstHTML := `<html>
+func TestSubComReq(t *testing.T) {
+	HTML := `<html>
 		<body>
 			<div xmlns="http://di.tamu.edu/DRI/1.0/">
 				<ul>
-					<li><a href="/hyper"></a></li>
+					<li><a href="/hyper">Supply</a></li>
 				</ul>
 			</div>
 		</body>
 	</html>`
+	mockFunc := func(url string) (string, error) {
+		return HTML, nil
+	}
 
-	secondHTML := `<html>
+	reqClient := newReqClient(mockFunc)
+	subComList, err := reqClient.SubComReq("/dummy")
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(subComList) != 1 {
+		t.Fatalf("expected 1 sub community , got %d", len(subComList))
+	}
+
+	if subComList[0].Name != "Supply" {
+		t.Errorf("Expected sub community name Supply, got %s", subComList[0].Name)
+	}
+	if subComList[0].Path != "/hyper" {
+		t.Errorf("Expected sub community path /hyper, got %s", subComList[0].Path)
+	}
+
+}
+
+func TestYearReq(t *testing.T) {
+	HTML := `<html>
 		<body>
 			<div class="file-list">
 				<div class="file-wrapper">
@@ -254,20 +283,8 @@ func TestYearReq(t *testing.T) {
 		</body>
 	</html>`
 
-	callCount := 0
 	mockFunc := func(url string) (string, error) {
-		callCount++
-		switch callCount {
-		case 1:
-			return firstHTML, nil
-		case 2:
-			if !strings.Contains(url, "/hyper") {
-				return "", errors.New("unexpected URL in second call")
-			}
-			return secondHTML, nil
-		default:
-			return "", errors.New("unexpected additional call")
-		}
+		return HTML, nil
 	}
 
 	reqClient := newReqClient(mockFunc)
