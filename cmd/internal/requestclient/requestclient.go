@@ -3,7 +3,6 @@ package requestclient
 import (
 	"errors"
 
-	"amrita_pyq/cmd/internal/configs"
 	"amrita_pyq/cmd/internal/webclient"
 	"github.com/anaskhan96/soup"
 )
@@ -59,7 +58,8 @@ func (rc *RequestClient) SemChooseReq(url string) ([]Resource, error) {
 	ul := div.FindAll("ul")
 	var li []soup.Root
 	if len(ul) > 1 {
-		li = ul[1].FindAll("li")
+		li = ul[0].FindAll("li")
+		li = append(li, ul[1].FindAll("li")...)
 	} else {
 		li = ul[0].FindAll("li")
 	}
@@ -107,7 +107,7 @@ func (rc *RequestClient) SemTableReq(url string) ([]Resource, error) {
 	return semesters, nil
 }
 
-func (rc *RequestClient) YearReq(url string) ([]Resource, error) {
+func (rc *RequestClient) SubComReq(url string) ([]Resource, error) {
 	res, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
@@ -115,18 +115,39 @@ func (rc *RequestClient) YearReq(url string) ([]Resource, error) {
 
 	doc := soup.HTMLParse(res)
 	div := doc.Find("div", "xmlns", "http://di.tamu.edu/DRI/1.0/")
-	ul := div.Find("ul")
-	li := ul.Find("li")
-	hyper := li.Find("a").Attrs()["href"]
+	subComSections := div.FindAll("ul")
+	communities := map[soup.Root]bool{}
 
-	url = configs.BASE_URL + hyper
+	for _, subComSection := range subComSections {
+		subComs := subComSection.FindAll("li")
+		for _, subCom := range subComs {
+			_, ok := communities[subCom]
+			if !ok {
+				communities[subCom] = true
+			}
+		}
+	}
+
+	var subCommunities []Resource
+
+	for com := range communities {
+		a := com.Find("a")
+		path := a.Attrs()["href"]
+		subCommunity := Resource{a.Text(), path}
+		subCommunities = append(subCommunities, subCommunity)
+	}
+	return subCommunities, nil
+
+}
+
+func (rc *RequestClient) YearReq(url string) ([]Resource, error) {
 	page, err := rc.WebClient.FetchHTML(url)
 	if err != nil {
 		return nil, errHTMLFetch
 	}
 
-	doc = soup.HTMLParse(page)
-	div = doc.Find("div", "class", "file-list")
+	doc := soup.HTMLParse(page)
+	div := doc.Find("div", "class", "file-list")
 	subdiv := div.FindAll("div", "class", "file-wrapper")
 
 	var files []Resource
