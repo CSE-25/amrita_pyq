@@ -14,7 +14,7 @@ func TestVersionCmd(t *testing.T) {
 		{
 			name: "SuccessVersion",
 			args: nil,
-			want: "Amrita Previous Year Questions v1.0.1\n",
+			want: "Amrita Previous Year Questions v1.0.2\n",
 		},
 	}
 	for _, tc := range tests {

@@ -14,6 +14,6 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of ampyq",
 	Long:  `Displays version of ampyq installed on the system.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("Amrita Previous Year Questions v1.0.1")
+		cmd.Println("Amrita Previous Year Questions v1.0.2")
 	},
 }
