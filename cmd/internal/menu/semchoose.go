@@ -82,9 +82,10 @@ func (sc *SemChoose) ChooseSemester(url string) {
 
 	// Handle selection.
 	if selectedOption == "Back" {
-		if _, err := sc.ReqClient.SemTableReq(stack.STACK.Pop()); err != nil {
-			fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+		semTable := SemTable{
+			ReqClient: sc.ReqClient,
 		}
+		semTable.ChooseQuestionSetFromSemester(stack.STACK.Pop()) // Proper call to previous menu
 		return
 	}
 
