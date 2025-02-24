@@ -58,7 +58,8 @@ func (rc *RequestClient) SemChooseReq(url string) ([]Resource, error) {
 	ul := div.FindAll("ul")
 	var li []soup.Root
 	if len(ul) > 1 {
-		li = ul[1].FindAll("li")
+		li = ul[0].FindAll("li")
+		li = append(li, ul[1].FindAll("li")...)
 	} else {
 		li = ul[0].FindAll("li")
 	}
