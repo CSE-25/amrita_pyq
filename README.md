@@ -133,6 +133,7 @@ After the PDF is displayed, you will have the following options:
 - [Jayadev D](https://github.com/FLASH2332)
 - [Nandagopal R Nair](https://github.com/Nandgopal-R)
 - [Shyam Sundar Raju](https://github.com/Shyam-Sundar-Raju)
+- [Visruth Thayyil Vijind](https://github.com/beppvis)
 
 ---
 ## Documentation
