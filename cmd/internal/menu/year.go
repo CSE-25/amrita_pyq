@@ -45,15 +45,17 @@ func (yt *YearTable) ChooseQP(url string) {
 		var options []huh.Option[string]
 		var fileList []File
 
+		// Add back option.
+		options = append(options, huh.NewOption("Back to Main Menu", "back"))
+		options = append(options, huh.NewOption("Quit", "quit"))
+
 		// Convert files to huh options.
 		for _, file := range files {
 			fileItem := File{file.Name, file.Path}
 			fileList = append(fileList, fileItem)
 			options = append(options, huh.NewOption(fileItem.name, fileItem.path))
 		}
-		// Add back option.
-		options = append(options, huh.NewOption("Back to Main Menu", "back"))
-		options = append(options, huh.NewOption("Quit", "quit"))
+
 		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 
 		// Create the select field.

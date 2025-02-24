@@ -46,15 +46,17 @@ func (sct *SubCommunityTable) ChooseSubCommunity(url string) {
 		var options []huh.Option[string]
 		var subComList []SubCommunity
 
+		// Add back option.
+		options = append(options, huh.NewOption("Back to Main Menu", "back"))
+		options = append(options, huh.NewOption("Quit", "quit"))
+
 		// Convert subCommunities to huh options.
 		for _, subCommunity := range subCommunities {
 			subComItem := SubCommunity{subCommunity.Name, subCommunity.Path}
 			subComList = append(subComList, subComItem)
 			options = append(options, huh.NewOption(subComItem.name, subComItem.path))
 		}
-		// Add back option.
-		options = append(options, huh.NewOption("Back to Main Menu", "back"))
-		options = append(options, huh.NewOption("Quit", "quit"))
+
 		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 
 		// Create the select field.
