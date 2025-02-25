@@ -128,7 +128,8 @@ After the PDF is displayed, you will have the following options:
 
 ---
 
-## Run Unit Test
+## Run Unit Tests
+
 To run all the unit tests for this project use the following command:
 ```bash
 go test ./... -v
