@@ -19,7 +19,11 @@ export default defineConfig({
         sidebar: [
             {
                 text: "Docs",
-                items: [{ text: "Getting Started", link: "/getting-started" }],
+                items: [
+                    { text: "Getting Started", link: "/getting-started" },
+                    { text: "Unit Test", link: "/unit-test" },
+
+                ],
             },
         ],
         socialLinks: [

@@ -37,23 +37,7 @@ git clone https://github.com/CSE-25/amrita_pyq
 
 ---
 
-### Step 3: Run Unit Test
-To run all the unit tests for this project use the following command:
-```bash
-go test ./... -v
-```
-
-You will be able to see the output and status for each unit test available.
-
-### Run Lint check
-```bash
-golangci-lint run
-```
-**Note:** This command will return an output only when it finds an error. Otherwise, no visible change occurs.
-
----
-
-### Step 4: Run the Application
+### Step 3: Run the Application
 1. Open the `main.go` file in your preferred code editor (eg:VS Code).  
 2. Execute the application:
    ```bash
@@ -66,7 +50,7 @@ golangci-lint run
 
 ---
 
-### Step 5: Select an Option
+### Step 4: Select an Option
 1. Use the menu to choose an option.  
 2. The tool will process your request and fetch the desired question paper.
 
@@ -78,7 +62,7 @@ golangci-lint run
 ---
 
 
-### Step 6: View the Question Paper
+### Step 5: View the Question Paper
 1. **Filter**: Use the `/` key to apply a filter and narrow down the list of PDFs.  
 2. The question paper will automatically open as a **PDF** in your default web browser.
 
@@ -93,7 +77,7 @@ The File is opened in PDF format in your default browser(in this case, Microsoft
 
 ---
    
-### Step 7: Continue or Exit
+### Step 6: Continue or Exit
 After the PDF is displayed, you will have the following options:
    - **Go Back to Main Menu**: Select `Back to Main Menu` to return to the main menu.  
    - **Exit**: Use the `Quit` option in the menu to close the application.
@@ -143,6 +127,28 @@ After the PDF is displayed, you will have the following options:
 > If you encounter any issues related to `GOPATH`, please refer to the [GOPATH Troubleshooting Guide](https://go.dev/wiki/SettingGOPATH#windows) for detailed instructions.
 
 ---
+
+## Run Unit Test
+To run all the unit tests for this project use the following command:
+```bash
+go test ./... -v
+```
+
+You will be able to see the output and status for each unit test available.
+
+To run a unit test specific to a package, go to the package location and run:
+```bash
+go test -run "PACKAGE_NAME"
+```
+
+## Run Lint check
+```bash
+golangci-lint run
+```
+**Note:** This command will return an output only when it finds an error. Otherwise, no visible change occurs.
+
+---
+
 ## Developers
 
 - [Abhinav Ramakrishnan](https://github.com/Abhinav-ark)
@@ -154,6 +160,8 @@ After the PDF is displayed, you will have the following options:
 - [Visruth Thayyil Vijind](https://github.com/beppvis)
 
 ---
+
 ## Documentation
 - [Ashwin V A](https://github.com/WinterSun23)
 - [R.D.Tarun](https://github.com/RD-Tarun)
+- [Shyam Sundar Raju](https://github.com/Shyam-Sundar-Raju)

@@ -24,21 +24,7 @@ Clone the repository to your local machine. Open a terminal and run:
 git clone https://github.com/CSE-25/amrita_pyq
 ```
 
-### Step 2: Run Unit Test
-To run all the unit tests for this project use the following command:
-```bash
-go test ./... -v
-```
-
-If all unit tests are passed you are good to go!!
-
-### Run Lint check
-```bash
-golangci-lint run
-```
-**Note:** This command will return an output only when it finds an error. Otherwise, no visible change occurs.
-
-### Step 3: Run the Application
+### Step 2: Run the Application
 
 1. Open the terminal and navigate to the cloned repository directory:
     ```sh
