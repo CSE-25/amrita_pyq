@@ -44,12 +44,13 @@ func (cs *CourseSelect) ChooseCourse() {
 	var subjects []Subject
 	var options []huh.Option[string]
 
+	options = append(options, huh.NewOption("Quit", "Quit"))
+
 	for _, res := range resources {
 		subject := Subject{res.Name, res.Path}
 		subjects = append(subjects, subject)
 		options = append(options, huh.NewOption(subject.name, subject.name))
 	}
-	options = append(options, huh.NewOption("Quit", "Quit"))
 
 	// First menu does NOT display history yet
 	form := huh.NewForm(
