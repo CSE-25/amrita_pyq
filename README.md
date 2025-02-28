@@ -20,6 +20,8 @@ Ensure the following requirements are met before using the application:
 - **Development Environment**:  
   - **Golang** must be installed on your system.  
   - Ensure a working **Go Compiler** is set up.
+  - **golangci** must be installed for testing (optional) using the command:
+    ```go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest```
 
 ---
 
@@ -125,6 +127,29 @@ After the PDF is displayed, you will have the following options:
 > If you encounter any issues related to `GOPATH`, please refer to the [GOPATH Troubleshooting Guide](https://go.dev/wiki/SettingGOPATH#windows) for detailed instructions.
 
 ---
+
+## Run Unit Tests
+
+To run all the unit tests for this project use the following command:
+```bash
+go test ./... -v
+```
+
+You will be able to see the output and status for each unit test available.
+
+To run a unit test specific to a package, go to the package location and run:
+```bash
+go test -run "PACKAGE_NAME"
+```
+
+## Run Lint check
+```bash
+golangci-lint run
+```
+**Note:** This command will return an output only when it finds an error. Otherwise, no visible change occurs.
+
+---
+
 ## Developers
 
 - [Abhinav Ramakrishnan](https://github.com/Abhinav-ark)
@@ -136,6 +161,8 @@ After the PDF is displayed, you will have the following options:
 - [Visruth Thayyil Vijind](https://github.com/beppvis)
 
 ---
+
 ## Documentation
 - [Ashwin V A](https://github.com/WinterSun23)
 - [R.D.Tarun](https://github.com/RD-Tarun)
+- [Shyam Sundar Raju](https://github.com/Shyam-Sundar-Raju)

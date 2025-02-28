@@ -12,6 +12,7 @@ Before you begin, ensure you have the following:
 - **Development Environment**:
     - **Golang** installed on your system.
     - A working **Go Compiler**.
+    - **golangci** installed on your system (Recommended for testing).
 
 ## Installation
 
