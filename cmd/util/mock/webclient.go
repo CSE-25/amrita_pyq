@@ -8,6 +8,7 @@ import (
 type MockWebClient struct {
 	FetchHTMLFunc   func(url string) (string, error)
 	OpenBrowserFunc func(url string) error
+	DownloadFileFunc func(url, filename string) error
 }
 
 // FetchHTML mocks the FetchHTML method of the WebClient interface.
@@ -24,4 +25,12 @@ func (m MockWebClient) OpenBrowser(url string) error {
 		return m.OpenBrowserFunc(url)
 	}
 	return errors.New("OpenBrowser not implemented")
+}
+
+// DownloadFile mocks the DownloadFile method of the WebClient interface.
+func (m MockWebClient) DownloadFile(url, filename string) error {
+	if m.DownloadFileFunc != nil {
+		return m.DownloadFileFunc(url, filename)
+	}
+	return errors.New("DownloadFile not implemented")
 }
