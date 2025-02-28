@@ -51,9 +51,11 @@ func (sc *SemTable) ChooseQuestionSetFromSemester(url string) {
 		sems = append(sems, semester)
 		options = append(options, huh.NewOption(semester.name, semester.name))
 	}
+
 	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
+
 	selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(

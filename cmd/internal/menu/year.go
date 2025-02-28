@@ -51,9 +51,11 @@ func (yt *YearTable) ChooseQP(url string) {
 			fileList = append(fileList, fileItem)
 			options = append(options, huh.NewOption(fileItem.name, fileItem.path))
 		}
-		// Add back option.
+
+		// Add back and quit option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
+
 		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 
 		// Create the select field.
@@ -94,14 +96,43 @@ func (yt *YearTable) ChooseQP(url string) {
 		case "quit":
 			util.QuitWithSpinner() // Quit the program.
 		default:
-			// Find selected file and process it.
 			for _, fileItem := range fileList {
 				if fileItem.path == selectedOption {
 					url := configs.BASE_URL + fileItem.path
 
-					// Open the file in the browser.
-					if err := yt.ReqClient.WebClient.OpenBrowser(url); err != nil {
-						fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+					var actionChoice string
+					choiceOptions := []huh.Option[string]{
+						huh.NewOption("Open in Browser", "open"),
+						huh.NewOption("Download", "download"),
+					}
+
+					choiceField := huh.NewSelect[string]().
+						Title("Choose an action").
+						Options(choiceOptions...).
+						Value(&actionChoice)
+
+					choiceForm := huh.NewForm(
+						huh.NewGroup(choiceField),
+					)
+					choiceForm.Run()
+
+					switch actionChoice {
+					case "open":
+						if err := yt.ReqClient.WebClient.OpenBrowser(url); err != nil {
+							fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+						}
+					case "download":
+						action := func() {
+							time.Sleep(2 * time.Second)
+						}
+						if err := spinner.New().Type(spinner.Dots).Title("Downloading ...").Action(action).Run(); err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+						if err := yt.ReqClient.WebClient.DownloadFile(url, fileItem.name); err != nil {
+							fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Download Error: %v\n", err)))
+						}
+						fmt.Println(configs.FetchStatusStyle.Render(fmt.Sprintf("Download complete: amritapyq/pyq_downloads/%s", fileItem.name)))
 					}
 					break
 				}

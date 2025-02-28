@@ -45,16 +45,18 @@ func (sc *SemChoose) ChooseSemester(url string) {
 	var selectedOption string
 	var assessList []Assessment
 	var options []huh.Option[string]
-
+	
 	// Convert assessments to huh options.
 	for _, assessment := range assessments {
 		assess := Assessment{assessment.Name, assessment.Path}
 		assessList = append(assessList, assess)
 		options = append(options, huh.NewOption(assess.name, assess.name))
 	}
+
 	// Add back and quit option.
 	options = append(options, huh.NewOption("Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
+	
 	selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 	// Create the form.
 	form := huh.NewForm(

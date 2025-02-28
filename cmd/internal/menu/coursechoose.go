@@ -49,6 +49,7 @@ func (cs *CourseSelect) ChooseCourse() {
 		subjects = append(subjects, subject)
 		options = append(options, huh.NewOption(subject.name, subject.name))
 	}
+
 	options = append(options, huh.NewOption("Quit", "Quit"))
 
 	// First menu does NOT display history yet

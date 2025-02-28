@@ -52,9 +52,11 @@ func (sct *SubCommunityTable) ChooseSubCommunity(url string) {
 			subComList = append(subComList, subComItem)
 			options = append(options, huh.NewOption(subComItem.name, subComItem.path))
 		}
+
 		// Add back option.
-		options = append(options, huh.NewOption("Back to Main Menu", "back"))
+		options = append(options, huh.NewOption("Back", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
+
 		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
 
 		// Create the select field.
