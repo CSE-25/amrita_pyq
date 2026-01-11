@@ -5,13 +5,12 @@ import (
 	"os"
 	"time"
 
+	"amrita_pyq/cmd/internal/configs"
 	"amrita_pyq/cmd/internal/requestclient"
 	"amrita_pyq/cmd/util"
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
-
-	"amrita_pyq/cmd/internal/configs"
 )
 
 type (
@@ -49,6 +48,9 @@ func (cs *CourseSelect) ChooseCourse() {
 		subjects = append(subjects, subject)
 		options = append(options, huh.NewOption(subject.name, subject.name))
 	}
+
+	// --- Added Go Back and Quit ---
+	options = append(options, huh.NewOption("Go Back", "Back"))
 	options = append(options, huh.NewOption("Quit", "Quit"))
 
 	// First menu does NOT display history yet
@@ -67,8 +69,8 @@ func (cs *CourseSelect) ChooseCourse() {
 		os.Exit(1)
 	}
 
-	// Auto-exit if "Quit" is selected
-	if selectedOption == "Quit" {
+	// Auto-exit if "Quit" or "Back" is selected
+	if selectedOption == "Quit" || selectedOption == "Back" {
 		util.QuitWithSpinner()
 	}
 
