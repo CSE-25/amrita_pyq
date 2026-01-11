@@ -54,7 +54,7 @@ func (yt *YearTable) ChooseQP(url string) {
 		// Add back option.
 		options = append(options, huh.NewOption("Back to Main Menu", "back"))
 		options = append(options, huh.NewOption("Quit", "quit"))
-		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " → ")
+		selectionDisplay := "Selection(s):\n" + strings.Join(configs.SelectionHistory, " -> ")
 
 		// Create the select field.
 		selectField := huh.NewSelect[string]().
@@ -99,9 +99,41 @@ func (yt *YearTable) ChooseQP(url string) {
 				if fileItem.path == selectedOption {
 					url := configs.BASE_URL + fileItem.path
 
-					// Open the file in the browser.
-					if err := yt.ReqClient.WebClient.OpenBrowser(url); err != nil {
-						fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+					// --- Ask to Open or Download ---
+					var action string
+					actionForm := huh.NewForm(
+						huh.NewGroup(
+							huh.NewSelect[string]().
+								Title("Choose Action").
+								Options(
+									huh.NewOption("Open in Browser", "open"),
+									huh.NewOption("Download PDF", "download"),
+								).
+								Value(&action),
+						),
+					)
+
+					if err := actionForm.Run(); err != nil {
+						fmt.Println(err)
+						continue
+					}
+
+					if action == "open" {
+						// Open the file in the browser.
+						if err := yt.ReqClient.WebClient.OpenBrowser(url); err != nil {
+							fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Error: %v\n", err)))
+						}
+					} else if action == "download" {
+						// Download the file
+						filename := strings.ReplaceAll(fileItem.name, " ", "_") + ".pdf"
+						fmt.Printf("Downloading to %s...\n", filename)
+
+						if err := yt.ReqClient.WebClient.DownloadFile(url, filename); err != nil {
+							fmt.Println(configs.ErrorStyle.Render(fmt.Sprintf("Download Error: %v\n", err)))
+						} else {
+							fmt.Println("Download Complete!")
+							time.Sleep(1 * time.Second)
+						}
 					}
 					break
 				}

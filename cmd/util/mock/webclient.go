@@ -25,3 +25,6 @@ func (m MockWebClient) OpenBrowser(url string) error {
 	}
 	return errors.New("OpenBrowser not implemented")
 }
+func (m *MockWebClient) DownloadFile(url string, filepath string) error {
+	return nil
+}

@@ -10,21 +10,21 @@ import (
 
 func newReqClient(fetchFunc func(string) (string, error)) RequestClient {
 	return RequestClient{
-		WebClient: mock.MockWebClient{FetchHTMLFunc: fetchFunc},
+		WebClient: &mock.MockWebClient{FetchHTMLFunc: fetchFunc},
 	}
 }
 
 func TestGetCoursesReq(t *testing.T) {
 	successHTML := `<html>
-		<body>
-			<div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
-				<div class="artifact-title">
-					<span>Course1</span>
-					<a href="/course1"></a>
-				</div>
-			</div>
-		</body>
-	</html>`
+        <body>
+            <div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
+                <div class="artifact-title">
+                    <span>Course1</span>
+                    <a href="/course1"></a>
+                </div>
+            </div>
+        </body>
+    </html>`
 	tests := []struct {
 		name     string
 		mockFunc func(url string) (string, error)
@@ -80,18 +80,18 @@ func TestGetCoursesReq(t *testing.T) {
 
 func TestSemChooseReq(t *testing.T) {
 	successHTML := `<html>
-		<body>
-			<div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
-				<ul>
-					<li><a href="/assessment1"><span>Assessment1</span></a></li>
-					<li><a href="/assessment2"><span>Assessment2</span></a></li>
-				</ul>
-				<ul>
-					<li><a href="/assessment3"><span>Assessment3</span></a></li>
-				</ul>
-			</div>
-		</body>
-	</html>`
+        <body>
+            <div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
+                <ul>
+                    <li><a href="/assessment1"><span>Assessment1</span></a></li>
+                    <li><a href="/assessment2"><span>Assessment2</span></a></li>
+                </ul>
+                <ul>
+                    <li><a href="/assessment3"><span>Assessment3</span></a></li>
+                </ul>
+            </div>
+        </body>
+    </html>`
 
 	tests := []struct {
 		name     string
@@ -157,15 +157,15 @@ func TestSemChooseReq(t *testing.T) {
 
 func TestSemTableReq(t *testing.T) {
 	successHTML := `<html>
-		<body>
-			<div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
-				<ul>
-					<li><a href="/sem1"><span>Semester1</span></a></li>
-					<li><a href="/sem2"><span>Semester2</span></a></li>
-				</ul>
-			</div>
-		</body>
-	</html>`
+        <body>
+            <div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
+                <ul>
+                    <li><a href="/sem1"><span>Semester1</span></a></li>
+                    <li><a href="/sem2"><span>Semester2</span></a></li>
+                </ul>
+            </div>
+        </body>
+    </html>`
 
 	tests := []struct {
 		name     string
@@ -192,12 +192,12 @@ func TestSemTableReq(t *testing.T) {
 			name: "FailNoSemestersFound",
 			mockFunc: func(url string) (string, error) {
 				return `<html>
-					<body>
-						<div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
-							<ul></ul>
-						</div>
-					</body>
-				</html>`, nil
+                    <body>
+                        <div id="aspect_artifactbrowser_CommunityViewer_div_community-view">
+                            <ul></ul>
+                        </div>
+                    </body>
+                </html>`, nil
 			},
 			inputURL: "/dummy",
 			wantLen:  0,
@@ -235,14 +235,14 @@ func TestSemTableReq(t *testing.T) {
 
 func TestSubComReq(t *testing.T) {
 	HTML := `<html>
-		<body>
-			<div xmlns="http://di.tamu.edu/DRI/1.0/">
-				<ul>
-					<li><a href="/hyper">Supply</a></li>
-				</ul>
-			</div>
-		</body>
-	</html>`
+        <body>
+            <div xmlns="http://di.tamu.edu/DRI/1.0/">
+                <ul>
+                    <li><a href="/hyper">Supply</a></li>
+                </ul>
+            </div>
+        </body>
+    </html>`
 	mockFunc := func(url string) (string, error) {
 		return HTML, nil
 	}
@@ -268,20 +268,20 @@ func TestSubComReq(t *testing.T) {
 
 func TestYearReq(t *testing.T) {
 	HTML := `<html>
-		<body>
-			<div class="file-list">
-				<div class="file-wrapper">
-					<div><a href="/file1"></a></div>
-					<div>
-						<div>
-							<span title="ignored"></span>
-							<span title="File1"></span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</body>
-	</html>`
+        <body>
+            <div class="file-list">
+                <div class="file-wrapper">
+                    <div><a href="/file1"></a></div>
+                    <div>
+                        <div>
+                            <span title="ignored"></span>
+                            <span title="File1"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+    </html>`
 
 	mockFunc := func(url string) (string, error) {
 		return HTML, nil
